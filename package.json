@@ -1,0 +1,26 @@
+{
+  "name": "passport-windowsauth",
+  "version": "0.0.1",
+  "description": "Passport strategy for Windows Integrated Authentication (NTLM)",
+  "main": "lib/strategy.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/auth0/passport-windowsauth.git"
+  },
+  "keywords": [
+    "passport",
+    "windows",
+    "auth",
+    "ntlm"
+  ],
+  "author": "Auth0",
+  "license": "MIT",
+  "dependencies": {
+    "passport": "~0.1.15",
+    "ldapjs": "~0.6.2"
+  },
+  "devDependencies": {}
+}
