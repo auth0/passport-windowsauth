@@ -28,8 +28,8 @@ passport.use(new WindowsStrategy({
   ldap: {
     url:             'ldap://wellscordoba.wellscordobabank.com/DC=wellscordobabank,DC=com',
     base:            'DC=wellscordobabank,DC=com',
-    bindDN:          'app1',
-    bindCredentials: 'Passw0rd!'
+    bindDN:          'someAccount',
+    bindCredentials: 'andItsPass'
   }
 }, function(profile, done){
   User.findOrCreate({ waId: profile.id }, function (err, user) {
