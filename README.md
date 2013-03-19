@@ -14,7 +14,7 @@ This module only works in **WINDOWS** and it only works when running inside of *
 
 The hard part about making this multiplatform is the NTLM support, this means to not prompt the user for his credentials and use the credentials from the Windows Session. Although I have found some implementations for Apache so it doesn't seem impossible.
 
-## Usage
+## Usage with Integrated Authentication
 
 **In your IIS application authentication settings, disable Anonymous and enable Windows Authentication.**
 
@@ -63,6 +63,58 @@ app.get('/express-passport',
   });
 ~~~
 
+## Non-integrated authentication
+
+You can use this module to authenticate users against a LDAP server without integrated authentication.
+You will prompt the user for his username and password in a form like this:
+
+~~~html
+<form action="/login" method="post">
+    <div>
+        <label>Username:</label>
+        <input type="text" name="username"/>
+    </div>
+    <div>
+        <label>Password:</label>
+        <input type="password" name="password"/>
+    </div>
+    <div>
+        <input type="submit" value="Log In"/>
+    </div>
+</form>
+~~~
+
+and then have a route like this:
+
+~~~javascript
+app.post('/login',
+  passport.authenticate('WindowsAuthentication', { 
+                                  successRedirect: '/',
+                                  failureRedirect: '/login',
+                                  failureFlash:    true })
+);
+~~~
+
+The same configuration as explained above is required with the ```integrated``` option in false:
+
+~~~javascript
+var passport = require('passport');
+var WindowsStrategy = require('passport-windowsauth');
+
+passport.use(new WindowsStrategy({ 
+  ldap: {
+    url:             'ldap://wellscordoba.wellscordobabank.com/DC=wellscordobabank,DC=com',
+    base:            'DC=wellscordobabank,DC=com',
+    bindDN:          'someAccount',
+    bindCredentials: 'andItsPass',
+    integrated:      false
+  }
+}, function(profile, done){
+  User.findOrCreate({ waId: profile.id }, function (err, user) {
+    done(err, user);
+  });
+}));
+~~~
 
 ## Example profile from LDAP
 
