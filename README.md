@@ -1,20 +1,18 @@
 Windows Authentication strategy for Passport.js.
 
-**NOTE:** this only works in iisnode.
-
 ## Install
 
     npm install passport-windowsauth
 
 ## Introduction
 
-This strategy reads an special server variable from IIS (more info about this [here](https://github.com/tjanczuk/iisnode/issues/87)) and then generate a profile. You can **optionally** pass some LDAP credentials to fetch the profile from Active Directory. 
-
-This module only works in **WINDOWS** and it only works when running inside of **IIS** whit [IISNode](https://github.com/tjanczuk/iisnode).
-
-The hard part about making this multiplatform is the NTLM support, this means to not prompt the user for his credentials and use the credentials from the Windows Session. Although I have found some implementations for Apache so it doesn't seem impossible.
+This module authenticate user with a LDAP directory. It works in two modes **Integrated Authentication** (often refer as NTLM) or **Form Authentication**.
 
 ## Usage with Integrated Authentication
+
+In this mode, this strategy reads an special server variable from IIS (more info about this [here](https://github.com/tjanczuk/iisnode/issues/87)) and then generate a profile. You can **optionally** pass some LDAP credentials to fetch the profile from Active Directory. 
+
+This only works in **WINDOWS** and it only works when running inside of **IIS** whit [IISNode](https://github.com/tjanczuk/iisnode).
 
 **In your IIS application authentication settings, disable Anonymous and enable Windows Authentication.**
 
