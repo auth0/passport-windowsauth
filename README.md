@@ -104,9 +104,9 @@ passport.use(new WindowsStrategy({
     url:             'ldap://wellscordoba.wellscordobabank.com/DC=wellscordobabank,DC=com',
     base:            'DC=wellscordobabank,DC=com',
     bindDN:          'someAccount',
-    bindCredentials: 'andItsPass',
-    integrated:      false
-  }
+    bindCredentials: 'andItsPass'
+  },
+  integrated:        false
 }, function(profile, done){
   User.findOrCreate({ waId: profile.id }, function (err, user) {
     done(err, user);
