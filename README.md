@@ -63,7 +63,7 @@ app.get('/express-passport',
 
 You can take advantage of [mod_auth_kerb](http://modauthkerb.sourceforge.net/) in linux by using apache as a reverse proxy to your node application. The configuration is not a _walk in the park_ but after you have everything configured it just works.
 
-1.  Generate a keytab in windows
+####1-Generate a keytab in windows
 
 ~~~
 ktpass
@@ -75,7 +75,7 @@ ktpass
 -out FILE.keytab
 ~~~
 
-2.  Check your /etc/krb5.conf
+####2-Check your /etc/krb5.conf
 
 ~~~
 kinit user@CONTOSO.COM
@@ -83,15 +83,17 @@ kinit user@CONTOSO.COM
 
 You should be able to login from the linux machine.
 
-3.  Check your keytab is okay
+####3-Check your keytab is okay
 
+~~~
 kinit -V -kt FILE.keytab service/server.CONTOSO.COM@CONTOSO.COM
+~~~
 
-4.  Install apache with the modules 
+####4-Install apache with the modules 
 
 The modules you need are `mod-auth-kerb`, `proxy`, `proxy_http`, `headers`, `rewrite`.
 
-5.  Configure your apache
+####5-Configure your apache
 
 ~~~
 <VirtualHost *:8001>
@@ -136,7 +138,7 @@ The modules you need are `mod-auth-kerb`, `proxy`, `proxy_http`, `headers`, `rew
 </VirtualHost>
 ~~~ 
 
-6.  Configure Passport.js
+####6-Configure Passport.js
 
 ~~~javascript
 var passport = require('passport');
