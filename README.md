@@ -8,11 +8,9 @@ Windows Authentication strategy for Passport.js.
 
 This module authenticate user with a LDAP directory. It works in two modes **Integrated Authentication** (often refer as NTLM) or **Form Authentication**.
 
-## Usage with Integrated Authentication
+## Integrated Authentication (IIS)
 
-In this mode, this strategy reads an special server variable from IIS (more info about this [here](https://github.com/tjanczuk/iisnode/issues/87)) and then generate a profile. You can **optionally** pass some LDAP credentials to fetch the profile from Active Directory. 
-
-This only works in **WINDOWS** and it only works when running inside of **IIS** whit [IISNode](https://github.com/tjanczuk/iisnode).
+In this mode, this strategy reads an special server variable from IIS (more info about this [here](https://github.com/tjanczuk/iisnode/issues/87)) and then generate a profile. You can **optionally** pass LDAP credentials to fetch the profile from Active Directory. 
 
 **In your IIS application authentication settings, disable Anonymous and enable Windows Authentication.**
 
@@ -61,6 +59,109 @@ app.get('/express-passport',
   });
 ~~~
 
+## Integrated Authentication with Apache and mod_auth_kerb
+
+You can take advantage of [mod_auth_kerb](http://modauthkerb.sourceforge.net/) in linux by using apache as a reverse proxy to your node application. The configuration is not a _walk in the park_ but after you have everything configured it just works.
+
+1.  Generate a keytab in windows
+
+~~~
+ktpass
+-princ service/server.CONTOSO.COM@CONTOSO.COM
+-mapuser user@CONTOSO.COM
+-crypto RC4-HMAC-NT
+-ptype KRB5_NT_PRINCIPAL
+-pass passssswwword
+-out FILE.keytab
+~~~
+
+2.  Check your /etc/krb5.conf
+
+~~~
+kinit user@CONTOSO.COM
+~~~
+
+You should be able to login from the linux machine.
+
+3.  Check your keytab is okay
+
+kinit -V -kt FILE.keytab service/server.CONTOSO.COM@CONTOSO.COM
+
+4.  Install apache with the modules 
+
+The modules you need are `mod-auth-kerb`, `proxy`, `proxy_http`, `headers`, `rewrite`.
+
+5.  Configure your apache
+
+~~~
+<VirtualHost *:8001>
+  ServerAdmin webmaster@localhost
+
+  ProxyPassInterpolateEnv On
+  ProxyPass / http://localhost:3000/          # this is the node.js app
+  ProxyPassReverse / http://localhost:3000/   # this is the node.js app
+  RewriteEngine On
+  RewriteCond %{LA-U:REMOTE_USER} (.+)
+  RewriteRule . - [E=RU:%1]
+  RequestHeader set X-Forwarded-User %{RU}e
+
+  <Proxy *>
+      Order deny,allow
+      Allow from all
+  </Proxy>
+
+  <Location />
+      AuthName "Kerberos Login"
+      AuthType Kerberos
+      Krb5Keytab /path/to/your/FILE.keytab    # VERY IMPORTANT
+      KrbAuthRealm CONTOSO.COM
+      KrbMethodNegotiate on
+      KrbSaveCredentials off
+      KrbVerifyKDC off
+      KrbServiceName SERVICE/server.CONTOSO.COM
+      Require valid-user
+  </Location>
+
+  ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+  <Directory "/usr/lib/cgi-bin">
+    AllowOverride None
+    Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+    Order allow,deny
+    Allow from all
+  </Directory>
+
+  ErrorLog ${APACHE_LOG_DIR}/error.log
+
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+~~~ 
+
+6.  Configure Passport.js
+
+~~~javascript
+var passport = require('passport');
+var WindowsStrategy = require('passport-windowsauth');
+
+passport.use(new WindowsStrategy({ 
+  ldap: {
+    url:             'ldap://wellscordoba.wellscordobabank.com/DC=wellscordobabank,DC=com',
+    base:            'DC=wellscordobabank,DC=com',
+    bindDN:          'someAccount',
+    bindCredentials: 'andItsPass'
+  },
+  getUserNameFromHeader: function (req) {
+    //in the above apache config we set the x-forwarded-user header.
+    //mod_auth_kerb uses user@domain
+    return req.headers['x-forwarded-user'].split('@')[0];
+  }
+}, function(profile, done){
+  User.findOrCreate({ waId: profile.id }, function (err, user) {
+    done(err, user);
+  });
+}));
+~~~
+
+
 ## Non-integrated authentication
 
 You can use this module to authenticate users against a LDAP server without integrated authentication.
@@ -106,7 +207,7 @@ passport.use(new WindowsStrategy({
     bindDN:          'someAccount',
     bindCredentials: 'andItsPass'
   },
-  integrated:        false
+  integrated:      false
 }, function(profile, done){
   User.findOrCreate({ waId: profile.id }, function (err, user) {
     done(err, user);
@@ -144,7 +245,7 @@ Example:
     ],
     "cn": "Jose Romaniello",
     "sn": "Romaniello",
-    "title": "cantante desafinado - programador experto",
+    "title": "cantante desafinado - programador",
     "physicalDeliveryOfficeName": "Chief Architect",
     "telephoneNumber": "+543519998822",
     "givenName": "Jose",
@@ -183,6 +284,7 @@ Example:
   }
 }
 ~~~ 
+
 
 ## License
 

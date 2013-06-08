@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 var Strategy = require('../lib/strategy');
+
 describe('strategy', function () {
   it('should fail if integrated is false and ldap is null', function(){
     expect(function() {
