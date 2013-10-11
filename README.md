@@ -14,6 +14,17 @@ In this mode, this strategy reads an special server variable from IIS (more info
 
 **In your IIS application authentication settings, disable Anonymous and enable Windows Authentication.**
 
+Configure iisnode to pass the special variable ```LOGON_USER``` from IIS to node
+
+~~~xml
+<configuration>
+  <system.webServer>
+    <!-- ... -->
+    <iisnode promoteServerVars="LOGON_USER" />
+  </system.webServer>
+</configuration>
+~~~
+
 If you want to use it with LDAP:
 
 ~~~javascript
