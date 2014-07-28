@@ -10,7 +10,7 @@ This module authenticate user with a LDAP directory. It works in two modes **Int
 
 ## Integrated Authentication (IIS)
 
-In this mode, this strategy reads an special server variable from IIS (more info about this [here](https://github.com/tjanczuk/iisnode/issues/87)) and then generate a profile. You can **optionally** pass LDAP credentials to fetch the profile from Active Directory. 
+In this mode, this strategy reads an special server variable from IIS (more info about this [here](https://github.com/tjanczuk/iisnode/issues/87)) and then generate a profile. You can **optionally** pass LDAP credentials to fetch the profile from Active Directory.
 
 **In your IIS application authentication settings, disable Anonymous and enable Windows Authentication.**
 
@@ -31,7 +31,7 @@ If you want to use it with LDAP:
 var passport = require('passport');
 var WindowsStrategy = require('passport-windowsauth');
 
-passport.use(new WindowsStrategy({ 
+passport.use(new WindowsStrategy({
   ldap: {
     url:             'ldap://wellscordoba.wellscordobabank.com/DC=wellscordobabank,DC=com',
     base:            'DC=wellscordobabank,DC=com',
@@ -58,12 +58,12 @@ passport.use(function(profile, done){
 }));
 ~~~
 
-NOTE: in this case profile only has ```displayName``` and ```id```, and the two variables with the same value.
+NOTE: in this case profile only has ```displayName``` and ```id```, both containing just the logon name.
 
 Then use the strategy in a route as follows:
 
 ~~~javascript
-app.get('/express-passport', 
+app.get('/express-passport',
   passport.authenticate('WindowsAuthentication'),
   function (req, res){
     res.json(req.user);
@@ -100,7 +100,7 @@ You should be able to login from the linux machine.
 kinit -V -kt FILE.keytab service/server.CONTOSO.COM@CONTOSO.COM
 ~~~
 
-####4-Install apache with the modules 
+####4-Install apache with the modules
 
 The modules you need are `mod-auth-kerb`, `proxy`, `proxy_http`, `headers`, `rewrite`.
 
@@ -147,7 +147,7 @@ The modules you need are `mod-auth-kerb`, `proxy`, `proxy_http`, `headers`, `rew
 
   CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
-~~~ 
+~~~
 
 ####6-Configure Passport.js
 
@@ -155,7 +155,7 @@ The modules you need are `mod-auth-kerb`, `proxy`, `proxy_http`, `headers`, `rew
 var passport = require('passport');
 var WindowsStrategy = require('passport-windowsauth');
 
-passport.use(new WindowsStrategy({ 
+passport.use(new WindowsStrategy({
   ldap: {
     url:             'ldap://wellscordoba.wellscordobabank.com/DC=wellscordobabank,DC=com',
     base:            'DC=wellscordobabank,DC=com',
@@ -200,7 +200,7 @@ and then have a route like this:
 
 ~~~javascript
 app.post('/login',
-  passport.authenticate('WindowsAuthentication', { 
+  passport.authenticate('WindowsAuthentication', {
                                   successRedirect: '/',
                                   failureRedirect: '/login',
                                   failureFlash:    true })
@@ -213,7 +213,7 @@ The same configuration as explained above is required with the ```integrated``` 
 var passport = require('passport');
 var WindowsStrategy = require('passport-windowsauth');
 
-passport.use(new WindowsStrategy({ 
+passport.use(new WindowsStrategy({
   ldap: {
     url:             'ldap://wellscordoba.wellscordobabank.com/DC=wellscordobabank,DC=com',
     base:            'DC=wellscordobabank,DC=com',
@@ -296,7 +296,7 @@ Example:
     "mail": "jromaniello@wellscordobabank.com"
   }
 }
-~~~ 
+~~~
 
 
 ## License
