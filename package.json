@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "passport": "~0.1.15",
-    "ldapjs": "https://github.com/auth0/node-ldapjs/tarball/master"
+    "ldapjs": "~0.7.1"
   },
   "devDependencies": {
     "chai": "~1.5.0",
