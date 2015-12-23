@@ -55,7 +55,7 @@ passport.use(function(profile, done){
   User.findOrCreate({ waId: profile.id }, function (err, user) {
     done(err, user);
   });
-}));
+});
 ~~~
 
 NOTE: in this case profile only has ```displayName``` and ```id```, both containing just the logon name.
