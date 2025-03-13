@@ -19,7 +19,7 @@
   "author": "Auth0",
   "license": "MIT",
   "dependencies": {
-    "passport": "~0.1.15",
+    "passport": "~0.7.0",
     "ldapjs": "~1.0.0"
   },
   "devDependencies": {
